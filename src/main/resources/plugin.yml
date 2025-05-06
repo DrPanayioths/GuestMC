@@ -1,0 +1,8 @@
+name: GuestNetwork
+version: '1.0-SNAPSHOT'
+main: org.drpanayioths.guestNetwork.GuestNetwork
+api-version: '1.21'
+commands:
+  why:
+    description: Tell you why you are in Spectator Mode
+    usage: /why

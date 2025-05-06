@@ -19,8 +19,6 @@ public final class GuestNetwork extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
         getLogger().info("Guests Are Coming (Plugin Working)");
 
-        uuid.add("8cb855d0-9606-465d-a0a2-6c9787bc6533");
-
 //      To-Do: Check The UUIDS From Config File
 //      To-Do: Add Command To Add More In The List
     }

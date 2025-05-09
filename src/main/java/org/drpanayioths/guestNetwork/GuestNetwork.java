@@ -9,7 +9,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public final class GuestNetwork extends JavaPlugin implements Listener {
     ArrayList<String> uuid = new ArrayList<>();
@@ -18,9 +22,9 @@ public final class GuestNetwork extends JavaPlugin implements Listener {
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
         getLogger().info("Guests Are Coming (Plugin Working)");
+        uuid_system();
 
-//      To-Do: Check The UUIDS From Config File
-//      To-Do: Add Command To Add More In The List
+    //  To-Do: Add Command To Add More In The List
     }
 
     @Override
@@ -28,18 +32,31 @@ public final class GuestNetwork extends JavaPlugin implements Listener {
         getLogger().info("Guests Enjoyed Their Stay (Plugin Stopping)");
     }
 
+    // Base System
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
+
+
+        List<String> list_of_uuids = getConfig().getStringList("uuids");
+        List<UUID> uuidList = list_of_uuids.stream()
+                .map(UUID::fromString)
+                .toList();
+
         Player player = event.getPlayer();
-        String player_uuid = player.getUniqueId().toString();
+        UUID player_uuid = player.getUniqueId();
         String nameofplayer = player.getDisplayName();
-        if (uuid.contains(player_uuid)) {
-            getLogger().info("The Player " + nameofplayer + " Is Not A Guest");
+
+        if (uuidList.contains(player_uuid)) {
+            System.out.println(nameofplayer + " Is A Host");
+            player.setGameMode(GameMode.SURVIVAL);
         } else {
+            System.out.println(nameofplayer + " Is A Guest");
             player.setGameMode(GameMode.SPECTATOR);
         }
     }
 
+
+    // Player Can Learn Why He Got Into Spectator Mode
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         Player player = (Player) sender;
@@ -54,5 +71,12 @@ public final class GuestNetwork extends JavaPlugin implements Listener {
         }
     }
 
+    // Config File System
+    public void uuid_system() {
+        File config_sys = new File(getDataFolder(), "config.yml");
+        if (!config_sys.exists()) {
+            saveResource("config.yml", true);
+        }
+    }
 
 }

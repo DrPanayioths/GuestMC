@@ -1,4 +1,4 @@
-# **Download The Plugin:** https://modrinth.com/plugin/guestmc
+## **Download The Plugin:** https://modrinth.com/plugin/guestmc
 
 
 **Allow everyone to see your worlds (Spectator Mode) 👀, restrict access to only the people you want to play with (Survival Mode) 🛡️.**

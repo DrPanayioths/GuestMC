@@ -1,0 +1,3 @@
+# Customise The Last Part Of The Spectator/Non-Spectator /why Command
+no_spectator: "isn't on the exclude list."
+spectator: ":)"

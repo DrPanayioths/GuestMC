@@ -8,6 +8,8 @@ import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -27,7 +29,8 @@ public final class GuestNetwork extends JavaPlugin implements Listener {
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
         getLogger().info("Guests Are Coming (Plugin Working)");
-        uuid_system();
+        uuid_sys();
+        messages_sys();
 
         // Put All UUIDS Into A List
         list_of_uuids = getConfig().getStringList("uuids");
@@ -67,24 +70,32 @@ public final class GuestNetwork extends JavaPlugin implements Listener {
         Player player = (Player) sender;
         UUID senderUUID = player.getUniqueId();
 
+        File messagesFile = new File(getDataFolder(), "messages.yml");
+        FileConfiguration messages = YamlConfiguration.loadConfiguration(messagesFile);
+        String exist_perms = messages.getString("no_spectator");
+        String no_perms = messages.getString("spectator");
+
         if (uuidList.contains(senderUUID)) {
-            player.sendMessage(ChatColor.GOLD + "You Are On The Exclude List, So You Can Play" + ChatColor.DARK_AQUA + " :)");
+            player.sendMessage(ChatColor.GOLD + "You Are On The Exclude List, So You Can Play" + ChatColor.DARK_AQUA + " " + no_perms);
         } else {
-            player.sendMessage(
-                    ChatColor.WHITE + "You Are In Spectator Mode Because Your UUID: " +
-                    ChatColor.AQUA + senderUUID +
-                    ChatColor.GRAY + " isn't on the exclude list."
-            );
+            player.sendMessage(ChatColor.WHITE + "You Are In Spectator Mode Because Your UUID: " + ChatColor.AQUA + senderUUID + ChatColor.GRAY + " " + exist_perms);
         }
         return true;
     }
 
     // Config File System
-    public void uuid_system() {
+    public void uuid_sys() {
         File config_sys = new File(getDataFolder(), "config.yml");
         if (!config_sys.exists()) {
             saveResource("config.yml", true);
         }
     }
 
+    // Messages File System
+    public void messages_sys() {
+        File messages_system = new File(getDataFolder(), "messages.yml");
+        if (!messages_system.exists()) {
+            saveResource("messages.yml", true);
+        }
+    }
 }

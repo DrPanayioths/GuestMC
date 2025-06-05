@@ -9,3 +9,4 @@
 .gradle/file-system.probe
 build/tmp/compileJava/compileTransaction/stash-dir/GuestNetwork.class.uniqueId0
 build/tmp/compileJava/previous-compilation-data.bin
+/.idea

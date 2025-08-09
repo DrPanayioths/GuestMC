@@ -14,9 +14,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 
@@ -29,8 +36,7 @@ public final class GuestNetwork extends JavaPlugin implements Listener {
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);
         getLogger().info("Guests Are Coming (Plugin Working)");
-        uuid_sys();
-        messages_sys();
+        files_gen();
 
         // Put All UUIDS Into A List
         list_of_uuids = getConfig().getStringList("uuids");
@@ -49,19 +55,23 @@ public final class GuestNetwork extends JavaPlugin implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         UUID player_uuid = player.getUniqueId();
-        String nameofplayer = player.getDisplayName();
 
         if (uuidList.contains(player_uuid)) {
-            System.out.println(nameofplayer + " Is A Host");
             player.setGameMode(GameMode.SURVIVAL);
+            log(player,"Join: ");
         } else {
-            System.out.println(nameofplayer + " Is A Guest");
             player.setGameMode(GameMode.SPECTATOR);
 
             BossBar notifier = Bukkit.createBossBar("§7Guest§8: Type §7/why §8To Learn More", BarColor.RED, BarStyle.SOLID);
             notifier.addPlayer(player);
             notifier.setProgress(1);
         }
+    }
+
+    @EventHandler
+    public void onPlayerLeave(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        log(player,"Left: ");
     }
 
 
@@ -83,16 +93,48 @@ public final class GuestNetwork extends JavaPlugin implements Listener {
         return true;
     }
 
-    // Config File System
-    public void uuid_sys() {
+    // Logbook System [Join/Leaves] (Username, Group, Date & Time)
+    public void log(Player player,String event) {
+        File logsSystem = new File(getDataFolder(), "logs");
+        if (!logsSystem.exists()) {
+            logsSystem.mkdirs();
+        }
+
+        File logs_system = new File(getDataFolder(), "logs");
+        String time_file = LocalDate.now().toString() + ".log";
+        File log_file = new File(logs_system, time_file);
+
+        UUID player_uuid = player.getUniqueId();
+        String user_group;
+        if(uuidList.contains(player_uuid)) {
+            user_group = "Host";
+        } else {
+            user_group = "Guest";
+        }
+
+        try (FileWriter fw = new FileWriter(log_file, true);
+             BufferedWriter bw = new BufferedWriter(fw)) {
+
+            String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            bw.write("[" + time + "] " + player.getName() + " " + event + " " + user_group);
+            bw.newLine();
+
+        } catch (IOException e) {
+            getLogger().warning("KATI PAEI LATHOS (Easter Egg): " + e.getMessage());
+        }
+
+    }
+
+
+
+    public void files_gen() {
+        // Config File System
         File config_sys = new File(getDataFolder(), "config.yml");
         if (!config_sys.exists()) {
             saveResource("config.yml", true);
         }
-    }
 
-    // Messages File System
-    public void messages_sys() {
+        // Messages File System
         File messages_system = new File(getDataFolder(), "messages.yml");
         if (!messages_system.exists()) {
             saveResource("messages.yml", true);
